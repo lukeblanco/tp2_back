@@ -2,6 +2,7 @@ import express, { Router } from "express";
 import { finalizarCompra } from "./casodeuso/finalizarCompra/finalizarCompra.js";
 import Product from "../models/products.js";
 import pkg from "mongoose";
+import { notificarVentaconPDF } from '../src/casodeuso/NotificarVentaconPDF.js'
 
 const { connect } = pkg;
 const app = express();
@@ -84,4 +85,18 @@ app.use("/api", router);
 
 app.listen(8080, () => {
   console.log("Conectado");
+});
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+
+router.post("/notify", async (req, res) => {
+  try {
+    const notify = await notificarVentaconPDF(id);
+    res.json(notify);
+  } catch (error) {
+    console.log(error);
+    res.json(error);
+  }
 });
