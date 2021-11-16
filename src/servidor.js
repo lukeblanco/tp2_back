@@ -1,6 +1,7 @@
 import express, { Router } from "express";
 import { finalizarCompra } from "./casodeuso/finalizarCompra/finalizarCompra.js";
 import Product from "../models/products.js";
+import Order from "../models/orders.js";
 import pkg from "mongoose";
 import { notificarVentaconPDF } from '../src/casodeuso/NotificarVentaconPDF.js'
 
@@ -89,11 +90,28 @@ app.listen(8080, () => {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+router.post("/addOrder", async (req, res) => {
+  const order = new Order(req.body);
+  console.log(req.body);
+  await order.save();
+  res.json("received");
+});
 
-
-router.post("/notify", async (req, res) => {
+router.get("/deleteOrder/:id", async (req, res) => {
+  const { id } = req.params;
   try {
-    const notify = await notificarVentaconPDF(id);
+    await Order.findByIdAndRemove({ _id: id });
+  } catch (error) {
+    res.json("error");
+    throw new Error(error);
+  }
+  res.json("deleted");
+});
+router.post("/notify/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const venta = await Order.findById({ _id: id });
+    const notify = await notificarVentaconPDF(venta);
     res.json(notify);
   } catch (error) {
     console.log(error);

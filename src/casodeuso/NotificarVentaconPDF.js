@@ -7,11 +7,11 @@ const pdfmake = new pdfmaker()
 const emailer = getEnviadorDeMails()
 const daoVentas = getDaoVentas()
 
-export async function notificarVentaconPDF(idVenta) {
+export async function notificarVentaconPDF(venta) {
     const emailer = getEnviadorDeMails()
-    const venta = daoVentas.findById(idVenta)
+    // const venta = daoVentas.findById(idVenta)
     // const destinatario = venta.email
-    const newObj = {nombre:venta.nombre,producto:venta.producto,precio:venta.precio}   
+    const newObj = {nombre:venta.nameUser,producto:venta.products,precio:venta.price}   
     const ventaString = JSON.stringify(newObj)
     console.log("GET venta..." + ventaString)
     console.log("Creando PDF...")
