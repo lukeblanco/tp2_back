@@ -5,9 +5,6 @@ const usuarioDao = getUsuariosDao()
 const generadorDeTokens = new TokenGenerator()
 
 export async function logIn(user) {
-
-    console.log(user,"userrrrrrrrr")
-
     const confirmUser = usuarioDao.confirmUser(user)
 
     if(confirmUser) {
@@ -16,21 +13,20 @@ export async function logIn(user) {
     })
     return {confirmUser , token }
     }
-
-    return {confirmUser }
+    else{
+        res.status(401).json(confirmUser)
+    }
 }
 
 export async function validateToken(req, res, next) {
     const token = req.headers[ 'access-token' ];
     const validToken = generadorDeTokens.validateToken(token);
-    console.log(validToken,"valid token")
     if(!validToken.error){
         next()
     }
     else{
-        res.json(validToken.message);
+        res.status(401).json(validToken.message);
     }
-   
 }
 
 
