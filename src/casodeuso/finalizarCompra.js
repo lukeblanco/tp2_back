@@ -1,4 +1,4 @@
-import exchange from "../../modulo/getRate/exchange.js";
+import exchange from "../modulo/getRate/exchange.js";
 const er = new exchange();
 
 export async function finalizarCompra(productos) {
@@ -10,6 +10,7 @@ export async function finalizarCompra(productos) {
       suma += valor;
     });
     var final = await er.exchangeEth(suma);
+    console.log(final);
     return final;
   } catch (error) {
     throw new Error(`FINALIZAR_COMPRA ${error.message}`);

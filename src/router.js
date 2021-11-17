@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { finalizarCompra } from "./casodeuso/finalizarCompra/finalizarCompra.js";
+import { finalizarCompra } from "./casodeuso/finalizarCompra.js";
 import Product from "./models/products.js";
 import Order from "./models/orders.js";
 import { notificarVentaconPDF } from "../src/casodeuso/NotificarVentaconPDF.js";
 import { logIn, validateToken, logOut } from "../src/casodeuso/Usuario.js";
 import nodemailer from 'nodemailer';
+import { compraenEth } from '../src/casodeuso/compraenEth.js'
 
 const routes = Router();
 
@@ -39,8 +40,10 @@ routes.post("/logIn", async (req, res) => {
     const user = await logIn(req.body);
     res.status(200).json({ user: user });
   } catch (error) {
-    res.json({ error, message: "usuario o contraseña invalidos" });
+    res.json({ error, message: "usuario o contraseña invalidos" })
   }
+});
+
   
   routes.post("/logOut", async (req, res) => {
     try{ 
@@ -51,7 +54,7 @@ routes.post("/logIn", async (req, res) => {
       res.status(401).json({ error,message:"no se pudo desloguiar correctamente" })
     }  
     });
-
+  
 routes.post("/add", async (req, res) => {
   try {
     const product = new Product(req.body);
@@ -147,6 +150,40 @@ routes.post("/send-email", async (req, res) => {
   }
 
   res.status(200).send("recived");
+});
+
+routes.post("/pedidoeth", async (req, res) => {
+  const message = "pedido ok"
+  try {
+    const resu = await compraenEth(req.body)
+    res.status(200).json({ message });
+  } catch (error) {
+    console.log(error)
+    res.status(400).json('error')
+  }
+});
+
+routes.post("/pedidos", async( req,res ) => {
+  const message = "compra cambio ok"
+  try {
+    const resu = await finalizarCompra(req.body)
+    res.status(200).json({ message });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json('error')
+  }
+});
+
+routes.post("/notificarventa", async (req, res) => {
+  try {
+    const notify = await notificarVentaconPDF(req.body);
+    res.status(200).send('Notificación de venta exitosa - OK');
+    res.json(notify);
+  } catch (error) {
+    res.status(400).send('Error 400 - bad request')
+    console.log(error);
+    res.json(error);
+  }
 });
 
 export default routes;
