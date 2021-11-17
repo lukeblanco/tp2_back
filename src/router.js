@@ -30,7 +30,7 @@ routes.post("/logIn", async (req, res) => {
     res.status(200).json({ user: user });
   }
   catch(error){
-    res.json({ error,message:"usuario o contraseña invalidos" })
+    res.status(401).json({ error,message:"usuario o contraseña invalidos" })
   }  
   });
 
@@ -40,7 +40,7 @@ routes.post("/logIn", async (req, res) => {
       res.status(200).json({ message });
     }
     catch(error){
-      res.json({ error,message:"no se pudo desloguiar correctamente" })
+      res.status(401).json({ error,message:"no se pudo desloguiar correctamente" })
     }  
     });
 
