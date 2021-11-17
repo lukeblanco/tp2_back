@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { finalizarCompra } from "./casodeuso/finalizarCompra/finalizarCompra.js";
-import Product from "../models/products.js";
-import Order from "../models/orders.js";
-import { notificarVentaconPDF } from '../src/casodeuso/NotificarVentaconPDF.js'
-import { logIn, validateToken, logOut } from '../src/casodeuso/Usuario.js'
+import Product from "./models/products.js";
+import Order from "./models/orders.js";
+import { notificarVentaconPDF } from "../src/casodeuso/NotificarVentaconPDF.js";
+import { logIn, validateToken, logOut } from "../src/casodeuso/Usuario.js";
+import nodemailer from 'nodemailer';
 
-const routes = Router()
+const routes = Router();
 
 routes.post("/compra", validateToken, async (req, res) => {
   try {
@@ -19,21 +20,28 @@ routes.post("/compra", validateToken, async (req, res) => {
 
 //- - - -  - - - -  - - - - - - - - - - - - - - - - - - -
 
-routes.get("/",validateToken, async (req, res) => {
-  const products = await find();
-  res.json(products);
+routes.get("/", async (req, res) => {
+  try {
+    const products = await Product.find();
+    if (products.length === 0) {
+      console.log("No hay productos en la lista");
+      res.status(204).send("No hay productos en la lista");
+    } else {
+      res.status(200).send(products);
+    }
+  } catch (error) {
+    res.status(400).send('error');
+  }
 });
 
 routes.post("/logIn", async (req, res) => {
-  try{ 
+  try {
     const user = await logIn(req.body);
     res.status(200).json({ user: user });
+  } catch (error) {
+    res.json({ error, message: "usuario o contraseña invalidos" });
   }
-  catch(error){
-    res.status(401).json({ error,message:"usuario o contraseña invalidos" })
-  }  
-  });
-
+  
   routes.post("/logOut", async (req, res) => {
     try{ 
       const message = await logOut(req.body);
@@ -44,41 +52,47 @@ routes.post("/logIn", async (req, res) => {
     }  
     });
 
-routes.post("/add",validateToken, async (req, res) => {
-  const product = new Product(req.body);
-  console.log(product);
-  await product.save();
-  res.json("received");
+routes.post("/add", async (req, res) => {
+  try {
+    const product = new Product(req.body);
+    console.log(req.body);
+    await product.save();
+  } catch (error) {
+    res.status(400).send("error");
+  }
+  res.status(200).send("added");
 });
 
-routes.get("/delete/:id",validateToken, async (req, res) => {
+routes.get("/delete/:id", async (req, res) => {
   const { id } = req.params;
   try {
     await Product.findByIdAndRemove({ _id: id });
   } catch (error) {
-    res.json("error");
-    throw new Error(error);
+    res.status(404).send("No se encontró el producto");
   }
-  res.json("deleted");
+  res.status(200).send("deleted");
 });
 
-routes.post("/edit/:id",validateToken, async (req, res) => {
+routes.post("/edit/:id", async (req, res) => {
   const { id } = req.params;
   try {
     await Product.findByIdAndUpdate({ _id: id }, req.body);
   } catch (error) {
-    res.json("error");
-    throw new Error(error);
+    res.status(404).send("No se encontró el producto");
   }
   console.log(req.body);
-  res.json("updated");
+  res.status(200).send("updated");
 });
 
-
-routes.post("/addOrder",validateToken, async (req, res) => {
-  const order = new Order(req.body);
-  await order.save();
-  res.json("received");
+routes.post("/addOrder", validateToken, async (req, res) => {
+  try {
+    const order = new Order(req.body);
+    await order.save();
+    
+  } catch (error) {
+    res.status(400).send("error")
+  }
+  res.status(200).send("added");
 });
 
 routes.get("/deleteOrder/:id", async (req, res) => {
@@ -86,13 +100,12 @@ routes.get("/deleteOrder/:id", async (req, res) => {
   try {
     await Order.findByIdAndRemove({ _id: id });
   } catch (error) {
-    res.json("error");
-    throw new Error(error);
+    res.status(404).send("No se encontró la orden");;
   }
-  res.json("deleted");
+  res.status(200).send("deleted");
 });
 
-routes.post("/notify/:id",validateToken, async (req, res) => {
+routes.post("/notify/:id", validateToken, async (req, res) => {
   const { id } = req.params;
   try {
     const venta = await Order.findById({ _id: id });
@@ -102,6 +115,38 @@ routes.post("/notify/:id",validateToken, async (req, res) => {
     console.log(error);
     res.json(error);
   }
+});
+
+routes.post("/send-email", async (req, res) => {
+  const { name, email, message } = req.body;
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 587,
+    auth: {
+      user: "sunny.cole92@ethereal.email",
+      pass: "5cftQprwtcxpnuerz9",
+    },
+  });
+  try {
+    await transporter.sendMail({
+      from: "susana.veum64@ethereal.email",
+      to: email,
+      subject: "Enviado",
+      text: message,
+      html: `
+      <ul>
+        <li>Name: ${name}</li>
+        <li>Email: ${email}</li>
+      </ul>
+       <p>${message}</p>
+      `,
+    });
+  } catch (error) {
+    res.status(500).send("Error inesperado, no se pudo enviar");
+  }
+
+  res.status(200).send("recived");
 });
 
 export default routes;

@@ -6,7 +6,7 @@
   "main": "exchangerate.js",
   "scripts": {
     "test": "node ./src/modulo/testgetRate.js",
-    "startserver": "nodemon ./src/servidor.js"
+    "dev": "nodemon ./src/servidor.js"
   },
   "author": "Luke",
   "license": "ISC",
@@ -19,7 +19,8 @@
     "mathjs": "^10.0.0",
     "mongoose": "^6.0.12",
     "nodemailer": "^6.7.1",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "objects-to-csv": "^1.3.6"
   },
   "keywords": []
 }
