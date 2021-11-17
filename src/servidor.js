@@ -1,6 +1,6 @@
-import express, { Router } from "express";
+import express from "express";
 import pkg from "mongoose";
-import routs from "./router.js"
+import routes from "./router.js"
 
 const { connect } = pkg;
 //conexion db
@@ -16,9 +16,9 @@ const app = express();
 app.use(express.json());
 
 
-app.use("/api", routs);
+app.use("/api", routes);
 
-app.listen(8080, () => {
+app.listen(3000, () => {
   console.log("Conectado");
 });
 
