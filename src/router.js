@@ -163,10 +163,11 @@ routes.post("/pedidoeth", async (req, res) => {
   }
 });
 
-routes.post("/pedidos", async( req,res ) => {
+routes.post("/pedidos/:id", async( req,res ) => {
+  const { id } = req.params;
   const message = "compra cambio ok"
   try {
-    const resu = await finalizarCompra(req.body)
+    const resu = await finalizarCompra(id)
     res.status(200).json({ message });
   } catch (error) {
     console.log(error);
