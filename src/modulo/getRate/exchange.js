@@ -6,10 +6,7 @@ const URL_EXCHANGE =
 export default class exchange {
   async exchangeEth(cantidad) {
     try {
-      console.log("estoy en el try")
       await axios.get(URL_EXCHANGE).then((response) => {
-        console.log(response.data.rate * cantidad)
-        console.log(cantidad)
         return response.data.rate * cantidad;
       });
     } catch (error) {
