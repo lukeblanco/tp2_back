@@ -2,6 +2,6 @@ import exchange from "./exchange.js";
 
 const er = new exchange();
 
-export function exchangeEth() {
+export function getExchangeEth() {
   return er;
 }

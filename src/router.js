@@ -5,9 +5,11 @@ import Order from "./models/orders.js";
 import { notificarVentaconPDF } from "../src/casodeuso/NotificarVentaconPDF.js";
 import { logIn, validateToken, logOut } from "../src/casodeuso/Usuario.js";
 import nodemailer from 'nodemailer';
-import { compraenEth } from '../src/casodeuso/compraenEth.js'
+//import { compraenEth } from '../src/casodeuso/compraenEth.js'
+import FinalizaCompraenEth from '../src/casodeuso/compraenEth.js'
 
 const routes = Router();
+const finalizarcompraeth = new FinalizaCompraenEth()
 
 routes.post("/compra", validateToken, async (req, res) => {
   try {
@@ -100,6 +102,7 @@ routes.post("/addOrder", validateToken, async (req, res) => {
 
 routes.get("/deleteOrder/:id", async (req, res) => {
   const { id } = req.params;
+  FinalizaCompraenEth
   try {
     await Order.findByIdAndRemove({ _id: id });
   } catch (error) {
@@ -152,20 +155,23 @@ routes.post("/send-email", async (req, res) => {
   res.status(200).send("recived");
 });
 
-routes.post("/pedidoeth", async (req, res) => {
-  const message = "pedido ok"
+routes.post("/pedidoeth/:id", async (req, res) => {
+  const { id } = req.params;
+  
+  const message = "Compra en Ethereum finalizada ok"
   try {
-    const resu = await compraenEth(req.body)
+    const resu = await finalizarcompraeth.compraenEth(id)
     res.status(200).json({ message });
   } catch (error) {
     console.log(error)
-    res.status(400).json('error')
+    res.status(400).send("Error"+error)
+    
   }
 });
 
 routes.post("/pedidos/:id", async( req,res ) => {
   const { id } = req.params;
-  const message = "compra cambio ok"
+  const message = "Compra finalizada ok"
   try {
     const resu = await finalizarCompra(id)
     res.status(200).json({ message });
