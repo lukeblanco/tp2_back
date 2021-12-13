@@ -5,8 +5,7 @@ import Order from "./models/orders.js";
 import { notificarVentaconPDF } from "../src/casodeuso/NotificarVentaconPDF.js";
 import { logIn, validateToken, logOut } from "../src/casodeuso/Usuario.js";
 import nodemailer from 'nodemailer';
-//import { compraenEth } from '../src/casodeuso/compraenEth.js'
-import FinalizaCompraenEth from '../src/casodeuso/compraenEth.js'
+import FinalizaCompraenEth from '../src/casodeuso/FinalizaCompraenEth.js'
 
 const routes = Router();
 const finalizarcompraeth = new FinalizaCompraenEth()
