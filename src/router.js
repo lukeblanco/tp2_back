@@ -10,6 +10,7 @@ import FinalizaCompraenEth from '../src/casodeuso/FinalizaCompraenEth.js'
 const routes = Router();
 const finalizarcompraeth = new FinalizaCompraenEth()
 
+
 routes.post("/compra", validateToken, async (req, res) => {
   try {
     const resu = await finalizarCompra(req.body);
@@ -101,7 +102,6 @@ routes.post("/addOrder", validateToken, async (req, res) => {
 
 routes.get("/deleteOrder/:id", async (req, res) => {
   const { id } = req.params;
-  FinalizaCompraenEth
   try {
     await Order.findByIdAndRemove({ _id: id });
   } catch (error) {

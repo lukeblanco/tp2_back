@@ -1,10 +1,8 @@
 import { getExchangeEth } from "../modulo/getRate/index.js";
 import { getVentasSinProcesarDao } from "../daos/index.js";
 
-
 const exchange = getExchangeEth();
 const daoVentas = getVentasSinProcesarDao();
-
 
 export async function finalizarCompra(id) {
   try {
@@ -21,3 +19,4 @@ export async function finalizarCompra(id) {
     throw new Error(`FINALIZAR_COMPRA ${error.message}`);
   }
 }
+
